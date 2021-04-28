@@ -10,6 +10,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.alan.alansdk.AlanCallback
+import com.alan.alansdk.AlanConfig
+import com.alan.alansdk.button.AlanButton
+import com.alan.alansdk.events.EventCommand
 import com.github.nitrico.lastadapter.LastAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.DataSnapshot
@@ -25,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     var TAG = "main"
     private var rvItems: RecyclerView? = null
     private var addItem: FloatingActionButton? = null
+    private var alan_button: AlanButton? = null
+    var dialog: AlertDialog? = null
     private val itemList: ArrayList<Items> = ArrayList()
     lateinit var adapter: LastAdapter
 
@@ -33,40 +39,56 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         rvItems = findViewById(R.id.rvItem)
         addItem = findViewById(R.id.addItem)
+        alan_button = findViewById(R.id.alan_button)
+
         rvItems!!.layoutManager = LinearLayoutManager(applicationContext)
         setAdapter()
         readData()
 
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Add Item")
+        val customLayout: View = layoutInflater
+            .inflate(
+                R.layout.custom_layout,
+                null
+            )
+        builder.setView(customLayout)
 
+        builder
+            .setPositiveButton(
+                "Add"
+            ) { dialog, which -> // send data from the
+                val etname = customLayout.findViewById<EditText>(R.id.etName).text.toString()
+                val etprice = customLayout.findViewById<EditText>(R.id.etPrice).text.toString()
+
+                addItem(etname, etprice)
+            }
+
+        dialog = builder.create()
+
+        val config = AlanConfig.builder()
+            .setProjectId("1ba25f7ab119ea9e6ab2c461c9cfe5c02e956eca572e1d8b807a3e2338fdd0dc/stage")
+            .build()
+        alan_button!!.initWithConfig(config)
+
+        alan_button!!.registerCallback(
+            object : AlanCallback() {
+                override fun onCommandReceived(eventCommand: EventCommand?) {
+                    super.onCommandReceived(eventCommand)
+                    eventCommand?.data?.let {
+                        if (it.optString("command") == "navigation") {
+                            if (it.optString("route") == "forward") {
+                                Toast.makeText(applicationContext, "Open Dialog", Toast.LENGTH_LONG).show()
+                                dialog!!.show()
+                            }
+                        }
+                    }
+                }
+            })
 
         addItem!!.setOnClickListener {
-            // Create an alert builder
-            // Create an alert builder
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("Add Item")
 
-            // set the custom layout
-
-            // set the custom layout
-            val customLayout: View = layoutInflater
-                .inflate(
-                    R.layout.custom_layout,
-                    null
-                )
-            builder.setView(customLayout)
-
-            builder
-                .setPositiveButton(
-                    "Add"
-                ) { dialog, which -> // send data from the
-                    val etname = customLayout.findViewById<EditText>(R.id.etName).text.toString()
-                    val etprice = customLayout.findViewById<EditText>(R.id.etPrice).text.toString()
-
-                    addItem(etname, etprice)
-                }
-
-            val dialog = builder.create()
-            dialog.show()
+            dialog!!.show()
 
         }
 
@@ -116,7 +138,11 @@ class MainActivity : AppCompatActivity() {
 //                    it.binding.iPrice.text=(it.adapterPosition).toString()
                     it.binding.iDel.setOnClickListener {
                         itemRef.child(itemList[position].id).removeValue()
-                        Toast.makeText(this@MainActivity,itemList[position].name+" Remove",Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@MainActivity,
+                            itemList[position].name + " Remove",
+                            Toast.LENGTH_LONG
+                        ).show()
 
                     }
                 }

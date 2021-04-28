@@ -14,6 +14,12 @@
         tools:layout_editor_absoluteY="73dp"
         android:id="@+id/rvItem"
         tools:listitem="@layout/custom_list"/>
+    <com.alan.alansdk.button.AlanButton
+        android:layout_gravity="start|bottom"
+        android:id="@+id/alan_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_16sdp"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addItem"
         android:layout_width="wrap_content"
@@ -22,4 +28,7 @@
         android:src="@drawable/ic_baseline_add_24"
         android:contentDescription="Add"
         android:layout_margin="16dp" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+<!--    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--    app:layout_constraintEnd_toEndOf="parent"-->
