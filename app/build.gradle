@@ -48,5 +48,5 @@ dependencies {
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
     implementation 'com.github.nitrico.lastadapter:lastadapter:2.3.0'
 
-    implementation 'app.alan:sdk:4.7.15'
+
 }
