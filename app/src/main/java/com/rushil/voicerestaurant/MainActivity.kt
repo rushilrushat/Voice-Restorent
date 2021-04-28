@@ -2,16 +2,19 @@ package com.rushil.voicerestaurant
 
 
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.nitrico.lastadapter.LastAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -27,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private var addItem: FloatingActionButton? = null
     private val itemList: ArrayList<Items> = ArrayList()
     lateinit var adapter: LastAdapter
+    lateinit var progressDialog: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,20 +38,20 @@ class MainActivity : AppCompatActivity() {
         rvItems = findViewById(R.id.rvItem)
         addItem = findViewById(R.id.addItem)
         rvItems!!.layoutManager = LinearLayoutManager(applicationContext)
+
+        progressDialog = ProgressDialog(this)
+        progressDialog.setMessage("Please Wait")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+
         setAdapter()
         readData()
 
-
-
         addItem!!.setOnClickListener {
-            // Create an alert builder
-            // Create an alert builder
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Add Item")
+            builder.setCancelable(false)
 
-            // set the custom layout
-
-            // set the custom layout
             val customLayout: View = layoutInflater
                 .inflate(
                     R.layout.custom_layout,
@@ -55,35 +59,64 @@ class MainActivity : AppCompatActivity() {
                 )
             builder.setView(customLayout)
 
-            builder
-                .setPositiveButton(
-                    "Add"
-                ) { dialog, which -> // send data from the
-                    val etname = customLayout.findViewById<EditText>(R.id.etName).text.toString()
-                    val etprice = customLayout.findViewById<EditText>(R.id.etPrice).text.toString()
+            val btnAdd = customLayout.findViewById<Button>(R.id.btnAdd)
+            val btnCancel = customLayout.findViewById<Button>(R.id.btnCancel)
+            val etPrice = customLayout.findViewById<TextInputEditText>(R.id.etPrice)
+            val etName = customLayout.findViewById<TextInputEditText>(R.id.etName)
 
-                    addItem(etname, etprice)
-                }
+            val tvItem = customLayout.findViewById<TextInputLayout>(R.id.tvItem)
+            val tvPrice = customLayout.findViewById<TextInputLayout>(R.id.tvPrice)
 
             val dialog = builder.create()
             dialog.show()
+
+            btnAdd.setOnClickListener {
+                val item = etName.text.toString()
+                val price = etPrice.text.toString()
+                if (validate(item, price, tvItem, tvPrice)) {
+                    val id: String = itemRef.push().key!!
+                    Log.d("data=>", itemRef.toString())
+                    val items = Items(id, item, price)
+                    itemRef.child(id).setValue(items)
+                    Toast.makeText(applicationContext, "Item Added", Toast.LENGTH_LONG).show()
+                    dialog.dismiss()
+                }
+            }
+
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
 
         }
 
     }
 
-    private fun addItem(name: String, price: String) {
-        val Id: String = itemRef.push().getKey()!!
-        Log.d("data=>", itemRef.toString())
-        val items = Items(Id, name, price)
-        itemRef.child(Id).setValue(items)
-        Toast.makeText(applicationContext, "Item addes", Toast.LENGTH_LONG).show()
+    private fun validate(
+        item: String,
+        price: String,
+        tvItem: TextInputLayout,
+        tvPrice: TextInputLayout
+    ): Boolean {
+        if (item.isBlank()) {
+            tvItem.error = "Enter item name"
+            return false
+        } else {
+            tvItem.error = ""
+        }
+        if (price.isBlank()) {
+            tvPrice.error = "Enter item price"
+            return false
+        } else {
+            tvPrice.error = ""
+        }
+        return true
     }
 
     private fun readData() {
         Log.d(TAG, "Read Data")
         itemRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                progressDialog.dismiss()
                 itemList.clear()
                 for (snapshot in dataSnapshot.children) {
                     val model = snapshot.value as Map<*, *>
@@ -102,6 +135,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
+                progressDialog.dismiss()
                 Log.w(TAG, "Failed to read value.", error.toException())
             }
         })
