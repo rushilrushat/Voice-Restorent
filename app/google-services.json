@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "750847163167",
+    "firebase_url": "https://restorent-84b9b-default-rtdb.firebaseio.com",
+    "project_id": "restorent-84b9b",
+    "storage_bucket": "restorent-84b9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:750847163167:android:06c9c5b05d3f6d81038e2a",
+        "android_client_info": {
+          "package_name": "com.rushil.voicerestaurant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "750847163167-s5grevbtuk9tkiuc5okl0mv1s3j8autq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKe1mbrH-CvJypMFBGHtUWApdo1dA922s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "750847163167-s5grevbtuk9tkiuc5okl0mv1s3j8autq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

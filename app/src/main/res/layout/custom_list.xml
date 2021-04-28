@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.rushil.voicerestaurant.model.Items" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        app:cardBackgroundColor="#0B5DD6"
+        app:cardCornerRadius="@dimen/_2sdp"
+        app:cardElevation="@dimen/_10sdp">
+
+
+        <LinearLayout
+            android:id="@+id/layoutItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/iName"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/backgroundColor"
+                android:textSize="18sp"
+                tools:text="@{item.name}" />
+
+            <TextView
+                android:id="@+id/iPrice"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{item.price}"
+                android:textColor="@color/backgroundColor"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/iDel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Del"
+                android:src="@drawable/ic_baseline_delete_24"
+                android:layout_margin="@dimen/_5sdp"/>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</layout>
