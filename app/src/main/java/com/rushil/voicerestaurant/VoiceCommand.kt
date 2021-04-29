@@ -121,7 +121,8 @@ class VoiceCommand(activity: MainActivity) {
 
                 if (("buy" in words)){
                     var item=words[1]
-                    var quintity=words[2].toInt()
+                    var quintity=words[2]
+
                     for (i in itemList){
                         if (i.name.toUpperCase().contains(item.toUpperCase())){
                             orderItem(i.id,i.name,i.price,quintity)
@@ -166,13 +167,12 @@ class VoiceCommand(activity: MainActivity) {
         }
         return message
     }
-    private fun orderItem(i_id: String, name: String, price: Int, quintity: Int) {
+    private fun orderItem(i_id: String, name: String, price: String, quintity: String) {
         val oId: String = itemRef.push().getKey()!!
         Log.d("data=>", itemRef.toString())
-        var totalprice:Int=price*quintity
-        val oitems = OrderItems(oId, i_id, name, quintity,totalprice)
+        val oitems = OrderItems(oId, i_id, name, quintity,price+quintity)
         itemRef.child(oId).setValue(oitems)
-        speakOut("yous order is $oId, item is $name, quintity is $quintity, Total price is $totalprice, order registerd")
+        speakOut("yous order is $oId, item is $name, quintity is $quintity, Total price is $price, order registerd")
 
     }
 }

@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity(){
     private fun addItem(name: String, price: String) {
         val Id: String = itemRef.push().getKey()!!
         Log.d("data=>", itemRef.toString())
-        val items = Items(Id, name, price.toInt())
+        val items = Items(Id, name, price)
         itemRef.child(Id).setValue(items)
         Toast.makeText(applicationContext, "Item addes", Toast.LENGTH_LONG).show()
     }
@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity(){
                     val name = model["name"].toString()
                     val id = model["id"].toString()
 
-                    val user = Items(id, name, price.toInt())
+                    val user = Items(id, name, price)
                     Log.d(TAG, user.id)
                     itemList.add(user)
                 }
