@@ -5,7 +5,7 @@
     <data>
 
         <variable
-            name="item"
+            name="itemUI"
             type="com.rushil.voicerestaurant.model.Items" />
     </data>
 
@@ -34,7 +34,7 @@
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_weight="1"
-                    android:text="@{item.name}"
+                    android:text="@{itemUI.name}"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     tools:text="Item Name" />
@@ -53,7 +53,7 @@
                 android:id="@+id/iPrice"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@{item.price}"
+                android:text="@{Double.toString(itemUI.price)}"
                 android:textColor="@color/black"
                 tools:text="Price" />
 
