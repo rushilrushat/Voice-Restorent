@@ -6,7 +6,7 @@ public class OrderItemModel {
     String status;
     int quantity;
     double totalPrice;
-
+    String itemName;
     public String getItemName() {
         return itemName;
     }
@@ -15,7 +15,7 @@ public class OrderItemModel {
         this.itemName = itemName;
     }
 
-    String itemName;
+
 
     public OrderItemModel() {
 

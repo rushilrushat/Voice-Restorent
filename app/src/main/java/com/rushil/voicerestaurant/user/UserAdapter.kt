@@ -1,11 +1,11 @@
-package com.rushil.voicerestaurant.admin
+package com.rushil.voicerestaurant.user
 
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
-internal class MyAdapter(
+internal class UserAdapter(
     var context: Context,
     fm: FragmentManager,
     var totalTabs: Int
@@ -14,10 +14,10 @@ internal class MyAdapter(
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> {
-                Admin_Items_Fragment()
+                User_Item_Fragment()
             }
             1 -> {
-                Admin_orders_Fragment()
+                User_Order_Fragment()
             }
             else -> getItem(position)
         }

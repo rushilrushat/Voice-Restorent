@@ -5,7 +5,7 @@
     <data>
 
         <variable
-            name="orderUI"
+            name="uorderUI"
             type="com.rushil.voicerestaurant.model.OrderItemModel" />
     </data>
 
@@ -15,7 +15,6 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/layoutItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_5sdp"
@@ -33,7 +32,7 @@
                     android:layout_gravity="center"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="1"
-                    android:text="@{orderUI.itemName}"
+                    android:text="@{uorderUI.itemName}"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     tools:text="Item Name" />
@@ -42,17 +41,10 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="@{orderUI.status}"
+                    android:text="@{uorderUI.status}"
                     android:layout_gravity="center"
                     android:textColor="@color/black"
                     tools:text="Status" />
-                <ImageButton
-                    android:id="@+id/oDel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_5sdp"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_baseline_edit_24" />
 
             </LinearLayout>
 
@@ -73,7 +65,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="@{Integer.toString(orderUI.quantity)}"
+                    android:text="@{Integer.toString(uorderUI.quantity)}"
                     android:textColor="@color/black"
                     android:textAlignment="textStart"
                     tools:text="Quantity" />
@@ -92,7 +84,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
-                    android:text="@{Double.toString(orderUI.totalPrice)}"
+                    android:text="@{Double.toString(uorderUI.totalPrice)}"
                     android:textColor="@color/black"
                     tools:text="Total Price" />
             </LinearLayout>

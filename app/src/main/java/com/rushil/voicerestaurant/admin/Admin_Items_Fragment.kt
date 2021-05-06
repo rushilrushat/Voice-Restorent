@@ -40,6 +40,7 @@ class Admin_Items_Fragment : Fragment() {
         progressDialog.setMessage("Please Wait")
         progressDialog.setCancelable(false)
         progressDialog.show()
+//        progressDialog.dismiss()
 
     }
 
@@ -91,5 +92,6 @@ class Admin_Items_Fragment : Fragment() {
                     }
                 }
             }.into(rvItems!!)
+
     }
 }

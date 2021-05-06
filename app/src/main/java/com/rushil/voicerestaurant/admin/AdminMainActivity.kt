@@ -30,7 +30,7 @@ class AdminMainActivity : AppCompatActivity() {
         tabLayout.addTab(tabLayout.newTab().setText("Items"))
         tabLayout.addTab(tabLayout.newTab().setText("Orders"))
         tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-        val adapter = MyAdapter(this, supportFragmentManager,
+        val adapter = AdminAdapter(this, supportFragmentManager,
             tabLayout.tabCount)
         viewPager.adapter = adapter
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))

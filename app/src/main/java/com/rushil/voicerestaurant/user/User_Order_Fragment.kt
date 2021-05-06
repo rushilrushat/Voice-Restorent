@@ -1,8 +1,7 @@
-package com.rushil.voicerestaurant.admin
+package com.rushil.voicerestaurant.user
 
 import android.app.ProgressDialog
 import android.graphics.Color
-import android.graphics.Color.parseColor
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -20,12 +19,12 @@ import com.google.firebase.database.ValueEventListener
 import com.rushil.voicerestaurant.BR
 import com.rushil.voicerestaurant.R
 import com.rushil.voicerestaurant.databinding.AdminOrderListBinding
+import com.rushil.voicerestaurant.databinding.UserOrderListBinding
 import com.rushil.voicerestaurant.model.OrderItemModel
-import kotlinx.android.synthetic.main.admin_order_list.view.*
 
-class Admin_orders_Fragment : Fragment() {
+class User_Order_Fragment : Fragment() {
     var itemRef = FirebaseDatabase.getInstance()
-    var TAG = "Admin_orders_Fragment"
+    var TAG = "User_Order_Fragment"
     private var rvOrderItems: RecyclerView? = null
 
     lateinit var progressDialog: ProgressDialog
@@ -36,12 +35,12 @@ class Admin_orders_Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_orders_, container, false)
+        return inflater.inflate(R.layout.fragment_user__order_, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rvOrderItems = view.findViewById(R.id.rvOrderItem)
+        rvOrderItems = view.findViewById(R.id.rvuOrderItem)
         rvOrderItems!!.layoutManager = LinearLayoutManager(context)
         setAdapter()
         readData()
@@ -58,7 +57,9 @@ class Admin_orders_Fragment : Fragment() {
                 orderList.clear()
                 if (dataSnapshot.exists()) {
                     for (snapshot in dataSnapshot.children) {
+                        Log.d(TAG,snapshot.toString())
                         val model = snapshot.getValue(OrderItemModel::class.java)
+                        Log.d(TAG, model.toString())
                         orderList.add(model!!)
                     }
                 }
@@ -76,7 +77,7 @@ class Admin_orders_Fragment : Fragment() {
     }
     private fun setAdapter() {
         adapter =
-            LastAdapter(orderList, BR.orderUI).map<OrderItemModel, AdminOrderListBinding>(R.layout.admin_order_list) {
+            LastAdapter(orderList, BR.uorderUI).map<OrderItemModel, UserOrderListBinding>(R.layout.user_order_list) {
                 onBind {
                     val position = it.adapterPosition
                     if (it.binding.oStatus.text.equals("Wait For Delivery")){
@@ -84,13 +85,6 @@ class Admin_orders_Fragment : Fragment() {
                     }
                     if (it.binding.oStatus.text.equals("Delivered")){
                         it.binding.oStatus.setTextColor(Color.GREEN)
-                    }
-                    it.binding.oDel.setOnClickListener {
-//                        itemRef.getReference("items").child(orderList[position].o_id).removeValue()
-                        Toast.makeText(context,
-                            orderList[position].i_id + " Remove",
-                            Toast.LENGTH_LONG
-                        ).show()
                     }
                 }
             }.into(rvOrderItems!!)

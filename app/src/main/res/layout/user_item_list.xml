@@ -37,14 +37,6 @@
                     android:textStyle="bold"
                     tools:text="Item Name" />
 
-                <ImageButton
-                    android:id="@+id/iDel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_5sdp"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_baseline_delete_24" />
-
             </LinearLayout>
 
             <TextView
