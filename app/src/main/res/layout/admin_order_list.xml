@@ -6,7 +6,7 @@
 
         <variable
             name="orderUI"
-            type="com.rushil.voicerestaurant.model.OrderItems" />
+            type="com.rushil.voicerestaurant.model.OrderItemModel" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -34,7 +34,7 @@
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_weight="1"
-                    android:text="@{orderUI.o_id}"
+                    android:text="@{orderUI.itemName}"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     tools:text="Item Name" />
@@ -49,13 +49,30 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/iPrice"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@{Double.toString(orderUI.totalPrice)}"
-                android:textColor="@color/black"
-                tools:text="Total Price" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/iQty"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Qty: "
+                    android:textColor="@color/black"
+                    tools:text="Quantity" />
+
+                <TextView
+                    android:id="@+id/iPrice"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Price: "
+                    android:textColor="@color/black"
+                    tools:text="Total Price" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

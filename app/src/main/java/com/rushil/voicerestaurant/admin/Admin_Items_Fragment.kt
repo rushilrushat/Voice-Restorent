@@ -15,9 +15,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.rushil.voicerestaurant.databinding.CustomListBinding
 import com.rushil.voicerestaurant.BR
 import com.rushil.voicerestaurant.R
+import com.rushil.voicerestaurant.databinding.AdminItemListBinding
 import com.rushil.voicerestaurant.model.Items
 
 
@@ -79,7 +79,7 @@ class Admin_Items_Fragment : Fragment() {
     }
     private fun setAdapter() {
         adapter =
-            LastAdapter(itemList, BR.itemUI).map<Items, CustomListBinding>(R.layout.admin_item_list) {
+            LastAdapter(itemList, BR.itemUI).map<Items, AdminItemListBinding>(R.layout.admin_item_list) {
                 onBind {
                     val position = it.adapterPosition
                     it.binding.iDel.setOnClickListener {
