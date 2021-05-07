@@ -10,6 +10,8 @@ import android.util.Patterns
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.rushil.voicerestaurant.admin.AdminMainActivity
+import com.rushil.voicerestaurant.user.UserMainActivity
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
@@ -42,19 +44,22 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.setOnClickListener {
             email = etEmail.text.toString()
             password = etPassword.text.toString()
-            if (validate()) {
-                dialog!!.show()
-                mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
-                    startActivity(Intent(this, MainActivity::class.java))
-                }.addOnFailureListener { e ->
-                    dialog!!.dismiss()
-                    Log.e("LoginActivity", "Exception : " + e.message)
-                    builder!!.setMessage(e.message).setPositiveButton("OK",
-                        DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
-                    builder!!.show()
-                    e.printStackTrace()
+            if (email.equals("admin") && password.equals("admin")) {
+                startActivity(Intent(this, AdminMainActivity::class.java))
+            } else
+                if (validate()) {
+                    dialog!!.show()
+                    mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
+                        startActivity(Intent(this, UserMainActivity::class.java))
+                    }.addOnFailureListener { e ->
+                        dialog!!.dismiss()
+                        Log.e("LoginActivity", "Exception : " + e.message)
+                        builder!!.setMessage(e.message).setPositiveButton("OK",
+                            DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+                        builder!!.show()
+                        e.printStackTrace()
+                    }
                 }
-            }
         }
     }
 

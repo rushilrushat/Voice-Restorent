@@ -28,7 +28,6 @@ import com.rushil.voicerestaurant.R
 import com.rushil.voicerestaurant.databinding.UserItemListBinding
 import com.rushil.voicerestaurant.model.Items
 import com.rushil.voicerestaurant.model.OrderItemModel
-import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -39,6 +38,7 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
     private var rvItems: RecyclerView? = null
     lateinit var progressDialog: ProgressDialog
     private val itemList: ArrayList<Items> = ArrayList()
+    private val orderList: ArrayList<OrderItemModel> = ArrayList()
     lateinit var adapter: LastAdapter
 
     private var micButton: FloatingActionButton? = null
@@ -153,8 +153,9 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                         question_Invalid_item -> speakOut(question_which_item)
                         question_quantity -> vInput()
                         question_order_successful -> {
-                            this@User_Item_Fragment.question = question_anything_else
-                            speakOut(this@User_Item_Fragment.question)
+//                            this@User_Item_Fragment.question = question_anything_else
+//                            speakOut(this@User_Item_Fragment.question)
+//                            User_Order_Fragment()
                         }
                         question_anything_else -> vInput()
                     }
@@ -203,7 +204,6 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                             question_which_item -> {
                                 Log.d(TAG, recognizedText)
                                 var s = false
-
                                 for (i in itemList) {
                                     if (i.name.toUpperCase().equals(recognizedText.toUpperCase())) {
                                         s = true
@@ -252,7 +252,13 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                                     this.question = question_which_item
                                     speakOut(this.question)
                                 } else if (recognizedText.equals("no")) {
-                                    activity!!.finish()
+                                    for (o in orderList){
+                                        Log.d(TAG,o.itemName)
+//                                        itemRef.getReference("order_items").child(o.o_id).setValue(o)
+                                    }
+                                    orderList.clear()
+                                    this.question = question_order_successful
+                                    speakOut(question)
                                 } else {
                                     speakOut(this.question)
                                 }
@@ -270,16 +276,18 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
         this.order.status = "Wait For Delivery"
         this.order.totalPrice = this.order.quantity.times(this.i_price!!)
         Log.d(TAG, this.order.toString())
-        itemRef.getReference("order_items").child(this.order.o_id.toString()).setValue(this.order)
 
-        this.i_price = null
-        this.order.i_id = null
-        this.order.o_id = null
-        this.order.status = null
+
+        orderList.add(order)
+        this.order.i_id= null
+        this.order.o_id= null
+        this.order.status= null
         this.order.quantity = 0
         this.order.totalPrice = 0.0
-        this.order.itemName = null
-        this.question = question_order_successful
+        this.order.itemName= null
+        this.i_price=null
+
+        this.question = question_anything_else
         speakOut(question)
 
     }
