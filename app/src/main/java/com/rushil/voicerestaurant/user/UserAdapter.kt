@@ -19,6 +19,9 @@ internal class UserAdapter(
             1 -> {
                 User_Order_Fragment()
             }
+            2 ->{
+                ProfileFragment()
+            }
             else -> getItem(position)
         }
     }

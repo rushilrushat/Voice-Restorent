@@ -2,14 +2,15 @@ package com.rushil.voicerestaurant.admin
 
 import android.app.ProgressDialog
 import android.graphics.Color
-import android.graphics.Color.parseColor
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.nitrico.lastadapter.LastAdapter
@@ -22,6 +23,7 @@ import com.rushil.voicerestaurant.R
 import com.rushil.voicerestaurant.databinding.AdminOrderListBinding
 import com.rushil.voicerestaurant.model.OrderItemModel
 import kotlinx.android.synthetic.main.admin_order_list.view.*
+
 
 class Admin_orders_Fragment : Fragment() {
     var itemRef = FirebaseDatabase.getInstance()
@@ -57,9 +59,15 @@ class Admin_orders_Fragment : Fragment() {
                 progressDialog.dismiss()
                 orderList.clear()
                 if (dataSnapshot.exists()) {
+                    Log.e(TAG, dataSnapshot.toString())
                     for (snapshot in dataSnapshot.children) {
-                        val model = snapshot.getValue(OrderItemModel::class.java)
-                        orderList.add(model!!)
+                        for (snap in snapshot.children){
+                            val model =snap.getValue(OrderItemModel::class.java)
+                            orderList.add(model!!)
+                        }
+
+
+
                     }
                 }
                 Log.d(TAG, orderList.toString())
@@ -79,18 +87,35 @@ class Admin_orders_Fragment : Fragment() {
             LastAdapter(orderList, BR.orderUI).map<OrderItemModel, AdminOrderListBinding>(R.layout.admin_order_list) {
                 onBind {
                     val position = it.adapterPosition
-                    if (it.binding.oStatus.text.equals("Wait For Delivery")){
+                    if (it.binding.oStatus.text.equals(resources.getString(R.string.waitfordelivery))){
                         it.binding.oStatus.setTextColor(Color.RED)
                     }
-                    if (it.binding.oStatus.text.equals("Delivered")){
+                    if (it.binding.oStatus.text.equals(resources.getString(R.string.ourofdelivery))){
+                        it.binding.oStatus.setTextColor(Color.BLUE)
+                    }
+                    if (it.binding.oStatus.text.equals(resources.getString(R.string.deliverd))){
                         it.binding.oStatus.setTextColor(Color.GREEN)
                     }
-                    it.binding.oDel.setOnClickListener {
-//                        itemRef.getReference("items").child(orderList[position].o_id).removeValue()
-                        Toast.makeText(context,
-                            orderList[position].i_id + " Remove",
-                            Toast.LENGTH_LONG
-                        ).show()
+                    var button=it.binding.oDel
+                    button.setOnClickListener {
+
+                        val dropDownMenu = PopupMenu(context!!, button)
+                        dropDownMenu.getMenuInflater().inflate(R.menu.popup_menu, dropDownMenu.getMenu())
+                        dropDownMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
+
+                            itemRef.getReference("order_items").child(orderList[position].userId).child(orderList[position].o_id).child("status").setValue(item.title)
+                            Toast.makeText(
+                                context,
+                                "Status Changed : " + orderList[position].userId+"\n"+orderList[position].o_id,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            true
+                        })
+                        dropDownMenu.show()
+//                        Toast.makeText(context,
+//                            orderList[position].i_id + " Remove",
+//                            Toast.LENGTH_LONG
+//                        ).show()
                     }
                 }
             }.into(rvOrderItems!!)

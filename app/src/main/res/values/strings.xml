@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Voice Restaurant</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="waitfordelivery">Wait For Delivery</string>
+    <string name="ourofdelivery">Out Of Delivery</string>
+    <string name="deliverd">Deliverd</string>
 </resources>

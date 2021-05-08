@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/o_wfd"
+        android:title="@string/waitfordelivery"/>
+
+    <item
+        android:id="@+id/o_ofd"
+        android:title="@string/ourofdelivery"/>
+
+    <item
+        android:id="@+id/o_d"
+        android:title="@string/deliverd"/>
+
+</menu>

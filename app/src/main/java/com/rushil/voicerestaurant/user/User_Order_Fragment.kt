@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.rushil.voicerestaurant.BR
 import com.rushil.voicerestaurant.R
+import com.rushil.voicerestaurant.Session
 import com.rushil.voicerestaurant.databinding.AdminOrderListBinding
 import com.rushil.voicerestaurant.databinding.UserOrderListBinding
 import com.rushil.voicerestaurant.model.OrderItemModel
@@ -26,7 +27,7 @@ class User_Order_Fragment : Fragment() {
     var itemRef = FirebaseDatabase.getInstance()
     var TAG = "User_Order_Fragment"
     private var rvOrderItems: RecyclerView? = null
-
+    private var session: Session? = null
     lateinit var progressDialog: ProgressDialog
     private val orderList: ArrayList<OrderItemModel> = ArrayList()
     lateinit var adapter: LastAdapter
@@ -42,6 +43,7 @@ class User_Order_Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         rvOrderItems = view.findViewById(R.id.rvuOrderItem)
         rvOrderItems!!.layoutManager = LinearLayoutManager(context)
+        session= Session(context!!)
         setAdapter()
         readData()
         progressDialog = ProgressDialog(context)
@@ -51,15 +53,13 @@ class User_Order_Fragment : Fragment() {
     }
     private fun readData() {
         Log.d(TAG, "Read Data")
-        itemRef.getReference("order_items").addValueEventListener(object : ValueEventListener {
+        itemRef.getReference("order_items").child(session?.getuseId().toString()).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 progressDialog.dismiss()
                 orderList.clear()
                 if (dataSnapshot.exists()) {
                     for (snapshot in dataSnapshot.children) {
-                        Log.d(TAG,snapshot.toString())
                         val model = snapshot.getValue(OrderItemModel::class.java)
-                        Log.d(TAG, model.toString())
                         orderList.add(model!!)
                     }
                 }
@@ -80,10 +80,14 @@ class User_Order_Fragment : Fragment() {
             LastAdapter(orderList, BR.uorderUI).map<OrderItemModel, UserOrderListBinding>(R.layout.user_order_list) {
                 onBind {
                     val position = it.adapterPosition
-                    if (it.binding.oStatus.text.equals("Wait For Delivery")){
+
+                    if (it.binding.oStatus.text.equals(resources.getString(R.string.waitfordelivery))){
                         it.binding.oStatus.setTextColor(Color.RED)
                     }
-                    if (it.binding.oStatus.text.equals("Delivered")){
+                    if (it.binding.oStatus.text.equals(resources.getString(R.string.ourofdelivery))){
+                        it.binding.oStatus.setTextColor(Color.BLUE)
+                    }
+                    if (it.binding.oStatus.text.equals(resources.getString(R.string.deliverd))){
                         it.binding.oStatus.setTextColor(Color.GREEN)
                     }
                 }

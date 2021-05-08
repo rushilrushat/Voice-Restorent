@@ -5,10 +5,12 @@ import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.util.Patterns
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.rushil.voicerestaurant.admin.AdminMainActivity
 import com.rushil.voicerestaurant.user.UserMainActivity
@@ -21,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     val mAuth = FirebaseAuth.getInstance()
     private var dialog: ProgressDialog? = null
     var builder: AlertDialog.Builder? = null
+    private var session: Session? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +48,15 @@ class LoginActivity : AppCompatActivity() {
             email = etEmail.text.toString()
             password = etPassword.text.toString()
             if (email.equals("admin") && password.equals("admin")) {
+                session?.setuseId("admin")
                 startActivity(Intent(this, AdminMainActivity::class.java))
             } else
                 if (validate()) {
                     dialog!!.show()
                     mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
+                        session!!.setuseId(mAuth.currentUser.uid)
                         startActivity(Intent(this, UserMainActivity::class.java))
+
                     }.addOnFailureListener { e ->
                         dialog!!.dismiss()
                         Log.e("LoginActivity", "Exception : " + e.message)
@@ -63,6 +69,23 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        session = Session(applicationContext)
+        session?.setuseId(null)
+        if (session?.getuseId()?.isNotBlank()!!){
+            if (session?.getuseId().equals("admin"))
+                startActivity(Intent(this, AdminMainActivity::class.java))
+            else
+                startActivity(Intent(this, UserMainActivity::class.java))
+        }
+
+    }
+    override fun onBackPressed() {
+        ActivityCompat.finishAffinity(
+            this@LoginActivity
+        )
+    }
     private fun validate(): Boolean {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             tvEmail.error = "Enter valid email"

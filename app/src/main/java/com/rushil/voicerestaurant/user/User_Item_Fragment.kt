@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.rushil.voicerestaurant.BR
 import com.rushil.voicerestaurant.R
+import com.rushil.voicerestaurant.Session
 import com.rushil.voicerestaurant.databinding.UserItemListBinding
 import com.rushil.voicerestaurant.model.Items
 import com.rushil.voicerestaurant.model.OrderItemModel
@@ -40,7 +41,7 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
     private val itemList: ArrayList<Items> = ArrayList()
     private val orderList: ArrayList<OrderItemModel> = ArrayList()
     lateinit var adapter: LastAdapter
-
+    private var session: Session? = null
     private var micButton: FloatingActionButton? = null
     lateinit var TtoS: TextToSpeech
     var question_which_item = "which item do you want to order."
@@ -51,9 +52,13 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
     var question = ""
     var MY_PERMISSIONS_RECORD_AUDIO = 1
     var recognizedText = ""
+    var itemId = ""
+    var iName = ""
+    var iPrice: Double = 0.0
+    var iQty = 0
 
     lateinit var order: OrderItemModel
-    var i_price: Double? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,6 +71,7 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
         super.onViewCreated(view, savedInstanceState)
         rvItems = view.findViewById(R.id.rvuItem)
         micButton = view.findViewById(R.id.mic_command)
+        session= Session(context!!)
         TtoS = TextToSpeech(this.context) { i ->
             if (i != TextToSpeech.ERROR) {
                 TtoS.setLanguage(Locale.getDefault())
@@ -155,7 +161,7 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                         question_order_successful -> {
 //                            this@User_Item_Fragment.question = question_anything_else
 //                            speakOut(this@User_Item_Fragment.question)
-//                            User_Order_Fragment()
+                            User_Order_Fragment()
                         }
                         question_anything_else -> vInput()
                     }
@@ -205,11 +211,15 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                                 Log.d(TAG, recognizedText)
                                 var s = false
                                 for (i in itemList) {
-                                    if (i.name.toUpperCase().equals(recognizedText.toUpperCase())) {
+                                    if (i.name.equals(recognizedText, ignoreCase = true)) {
                                         s = true
-                                        this.order.i_id = i.id
-                                        this.order.itemName = i.name
-                                        this.i_price = i.price
+                                        itemId = i.id
+                                        iName = i.name
+                                        iPrice = i.price
+//                                        this.order.i_id = i.id
+//                                        this.order.itemName = i.name
+//                                        this.iPrice = i.price
+//                                        return
                                     }
                                 }
                                 if (s) {
@@ -223,21 +233,29 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                             }
                             question_quantity -> {
                                 Log.d(TAG, recognizedText.isDigitsOnly().toString())
-                                if (recognizedText.toUpperCase().equals("TU")) {
-                                    this.order.quantity = 2
-                                    orderItem()
+                                if (recognizedText.equals("TU", true)) {
+                                    iQty = 2
+//                                    this.order.quantity = 2
+                                    val id = itemRef.getReference("order_items").child(session?.getuseId().toString()).push().key
+                                    val model =
+                                        OrderItemModel(session?.getuseId(),id, itemId,R.string.waitfordelivery.toString(), iQty, (iQty * iPrice), iName)
+                                    orderItem(model)
                                 } else {
                                     try {
-                                        var a = recognizedText.toIntOrNull()!!
+                                        val a = recognizedText.toIntOrNull()!!
                                         if (a != null) {
-                                            this.order.quantity = recognizedText.toIntOrNull()!!
-                                            orderItem()
+//                                            this.order.quantity = recognizedText.toIntOrNull()!!
+                                            iQty = recognizedText.toIntOrNull()!!
+                                            val id = itemRef.getReference("order_items").child(session?.getuseId().toString()).push().key
+                                            val model = OrderItemModel(session?.getuseId(),id, itemId, resources.getString(R.string.waitfordelivery), iQty, (iQty * iPrice), iName)
+                                            orderItem(model)
+//                                            orderItem()
                                         } else {
                                             this.question = question_quantity
                                             speakOut(question)
                                         }
-                                    }catch (e:NullPointerException){
-                                        Log.e(TAG,e.message.toString())
+                                    } catch (e: NullPointerException) {
+                                        Log.e(TAG, e.message.toString())
                                         this.question = question_quantity
                                         speakOut(question)
 
@@ -252,9 +270,9 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                                     this.question = question_which_item
                                     speakOut(this.question)
                                 } else if (recognizedText.equals("no")) {
-                                    for (o in orderList){
-                                        Log.d(TAG,o.itemName)
-//                                        itemRef.getReference("order_items").child(o.o_id).setValue(o)
+                                    for (o in orderList) {
+                                        Log.d(TAG, o.itemName)
+                                        itemRef.getReference("order_items").child(session?.getuseId().toString()).child(o.o_id).setValue(o)
                                     }
                                     orderList.clear()
                                     this.question = question_order_successful
@@ -270,22 +288,19 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
         }
     }
 
-    private fun orderItem() {
-
-        this.order.o_id = itemRef.getReference("order_items").push().getKey()!!
-        this.order.status = "Wait For Delivery"
-        this.order.totalPrice = this.order.quantity.times(this.i_price!!)
-        Log.d(TAG, this.order.toString())
-
-
-        orderList.add(order)
-        this.order.i_id= null
-        this.order.o_id= null
-        this.order.status= null
-        this.order.quantity = 0
-        this.order.totalPrice = 0.0
-        this.order.itemName= null
-        this.i_price=null
+    private fun orderItem(model: OrderItemModel) {
+//        this.order.o_id = itemRef.getReference("order_items").push().getKey()!!
+//        this.order.status = "Wait For Delivery"
+//        this.order.totalPrice = this.order.quantity.times(this.iPrice!!)
+//        Log.d(TAG, this.order.toString())
+        orderList.add(model)
+//        this.order.i_id= null
+//        this.order.o_id= null
+//        this.order.status= null
+//        this.order.quantity = 0
+//        this.order.totalPrice = 0.0
+//        this.order.itemName= null
+//        this.iPrice=null
 
         this.question = question_anything_else
         speakOut(question)

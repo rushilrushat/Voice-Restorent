@@ -7,13 +7,8 @@ public class OrderItemModel {
     int quantity;
     double totalPrice;
     String itemName;
-    public String getItemName() {
-        return itemName;
-    }
+    String userId;
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
 
 
 
@@ -21,13 +16,14 @@ public class OrderItemModel {
 
     }
 
-    public OrderItemModel(String o_id, String i_id, String status, int quantity, double totalPrice,String itemName) {
+    public OrderItemModel(String uId, String o_id, String i_id, String status, int quantity, double totalPrice, String itemName) {
         this.o_id = o_id;
         this.i_id = i_id;
         this.status = status;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
         this.itemName = itemName;
+        this.userId = uId;
     }
 
 
@@ -69,6 +65,17 @@ public class OrderItemModel {
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getUserId() { return userId; }
+
+    public void setUserId(String userId) { this.userId = userId; }
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
 }
