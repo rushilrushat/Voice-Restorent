@@ -9,15 +9,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.rushil.voicerestaurant.LoginActivity
 import com.rushil.voicerestaurant.R
 import com.rushil.voicerestaurant.Session
+import kotlinx.android.synthetic.main.activity_user_main.*
 
 
 class UserMainActivity : AppCompatActivity(){
     lateinit var tabLayout: TabLayout
     lateinit var viewPager: ViewPager
     private var mic: FloatingActionButton? = null
+    var itemRef = FirebaseDatabase.getInstance()
     var TAG = "UserMainActivity"
     private var session: Session? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +59,19 @@ class UserMainActivity : AppCompatActivity(){
 //        val installIntent = Intent()
 //        installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
 //        startActivity(installIntent)
+        itemRef.reference.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val model = snapshot.value as Map<*, *>
+                tvTime.text="Open Time ${model["oTime"]}  Close Time ${model["cTime"]}"
+                Log.d(TAG, model["oTime"].toString())
+                Log.d(TAG, model["cTime"].toString())
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                tvTime.text="Restorent Close"
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
 
     }
 

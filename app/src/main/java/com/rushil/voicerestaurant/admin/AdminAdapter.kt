@@ -19,6 +19,9 @@ internal class AdminAdapter(
             1 -> {
                 Admin_orders_Fragment()
             }
+            2 ->{
+                AdminTimeFragment()
+            }
             else -> getItem(position)
         }
     }

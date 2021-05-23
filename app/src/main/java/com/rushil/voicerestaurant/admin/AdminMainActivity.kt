@@ -35,6 +35,7 @@ class AdminMainActivity : AppCompatActivity() {
         session = Session(this)
         tabLayout.addTab(tabLayout.newTab().setText("Items"))
         tabLayout.addTab(tabLayout.newTab().setText("Orders"))
+        tabLayout.addTab(tabLayout.newTab().setText("Time"))
         tabLayout.tabGravity = TabLayout.GRAVITY_FILL
         if (session?.getuseId()?.isBlank()!!) {
             startActivity(Intent(this, LoginActivity::class.java))
