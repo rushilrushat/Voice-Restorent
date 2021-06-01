@@ -17,7 +17,7 @@
              android:gravity="center"
              android:textColor="#FF0000"
              android:textAlignment="center"
-             android:text="TextView" />
+             android:text="" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayoutUser"

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
@@ -13,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +31,10 @@ import com.rushil.voicerestaurant.Session
 import com.rushil.voicerestaurant.databinding.UserItemListBinding
 import com.rushil.voicerestaurant.model.Items
 import com.rushil.voicerestaurant.model.OrderItemModel
+import kotlinx.android.synthetic.main.activity_user_main.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.time.LocalTime
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -44,11 +50,17 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
     private var session: Session? = null
     private var micButton: FloatingActionButton? = null
     lateinit var TtoS: TextToSpeech
+    var question_default = "How may i help you."
     var question_which_item = "which item do you want to order."
-    var question_Invalid_item = "invalid item"
+    var question_Item_not_avilabale = "This item is not available for now."
     var question_quantity = "How much quantity do you want"
     var question_anything_else = "Do you want anything else"
     var question_order_successful = "your order place successful"
+    var question_yes = "restaurant is Open"
+    var question_no = "restaurant is Close"
+    var question_restaurent_status = "what is restaurant Status"
+    var question_buy_item = "i want to order item"
+    var question_invalid_input = "invalid input"
     var question = ""
     var MY_PERMISSIONS_RECORD_AUDIO = 1
     var recognizedText = ""
@@ -56,7 +68,9 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
     var iName = ""
     var iPrice: Double = 0.0
     var iQty = 0
-
+    var oTime=""
+    var cTime=""
+    var inputParser= SimpleDateFormat("HH:mm", Locale.US)
     lateinit var order: OrderItemModel
 
     override fun onCreateView(
@@ -87,9 +101,21 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
         progressDialog.setCancelable(false)
         progressDialog.show()
         micButton!!.setOnClickListener {
-            question = question_which_item
+            question = question_default
             speakOut(question)
         }
+        itemRef.reference.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val model = snapshot.value as Map<*, *>
+                oTime = model["oTime"].toString()
+                cTime=model["cTime"].toString()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                tvTime.text="Restorent Close"
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
     }
 
     private fun readData() {
@@ -155,8 +181,9 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
             override fun onDone(utteranceId: String?) {
                 activity!!.runOnUiThread {
                     when (utteranceId) {
+                        question_default -> vInput()
                         question_which_item -> vInput()
-                        question_Invalid_item -> speakOut(question_which_item)
+                        question_Item_not_avilabale -> speakOut(question_which_item)
                         question_quantity -> vInput()
                         question_order_successful -> {
 //                            this@User_Item_Fragment.question = question_anything_else
@@ -164,6 +191,7 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                             User_Order_Fragment()
                         }
                         question_anything_else -> vInput()
+                        question_invalid_input -> speakOut(question_default)
                     }
                 }
             }
@@ -197,6 +225,7 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -207,6 +236,34 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                     if (!result.isNullOrEmpty()) {
                         recognizedText = result[0]
                         when (question) {
+                            question_default ->{
+                                if (recognizedText.equals(question_restaurent_status,ignoreCase = true)){
+                                    var now=LocalTime.now()
+                                    var open=LocalTime.of(oTime.split(":")[0].toInt(),oTime.split(":")[1].toInt())
+                                    var close=LocalTime.of(cTime.split(":")[0].toInt(),cTime.split(":")[1].toInt())
+                                    if (now.isAfter(open)&&now.isBefore(close)){
+                                        question=question_yes
+                                        speakOut(question)
+                                    }else{
+                                        question=question_no
+                                        speakOut(question)
+                                    }
+
+
+                                }else if (recognizedText.equals(question_buy_item,ignoreCase = true)){
+                                    if (UserMainActivity().r_Status){
+                                        question=question_which_item
+                                        speakOut(question)
+                                    }else{
+                                        question=question_no
+                                        speakOut(question)
+                                    }
+
+                                }else {
+                                    question=question_invalid_input
+                                    speakOut(question)
+                                }
+                            }
                             question_which_item -> {
                                 Log.d(TAG, recognizedText)
                                 var s = false
@@ -226,7 +283,7 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                                     question = question_quantity
                                     speakOut(question)
                                 } else {
-                                    question = question_Invalid_item
+                                    question = question_Item_not_avilabale
                                     speakOut(question)
 
                                 }
@@ -281,6 +338,7 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                                     speakOut(this.question)
                                 }
                             }
+
                         }
                     }
                 }
@@ -305,5 +363,13 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
         this.question = question_anything_else
         speakOut(question)
 
+    }
+
+    private fun parseDate(date: String): Date? {
+        return try {
+            inputParser.parse(date)
+        } catch (e: ParseException) {
+            Date(0)
+        }
     }
 }

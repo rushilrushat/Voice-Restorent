@@ -23,6 +23,8 @@ import java.util.*
 class AdminTimeFragment : Fragment() {
     var itemRef = FirebaseDatabase.getInstance()
     val mcurrentTime = Calendar.getInstance()
+    var oTime=""
+    var cTime=""
     lateinit var progressDialog: ProgressDialog
     private var TAG = "AdminTimeFragment"
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,8 +38,37 @@ class AdminTimeFragment : Fragment() {
         itemRef.reference.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val model = snapshot.value as Map<*, *>
-                view.etOtime.setText(model["oTime"].toString())
-                view.etCtime.setText(model["cTime"].toString())
+
+                var hp=model["oTime"].toString().split(":")[0].toInt()
+                var f=""
+                var min=model["oTime"].toString().split(":")[1]
+                if (hp == 0) {
+                    hp += 12;
+                    f = "AM";
+                } else if (hp == 12) {
+                    f = "PM";
+                } else if (hp > 12) {
+                    hp -= 12;
+                    f = "PM";
+                } else {
+                    f = "AM";
+                }
+                view.etOtime.setText("$hp:$min $f")
+                hp=model["cTime"].toString().split(":")[0].toInt()
+                f=""
+                min=model["cTime"].toString().split(":")[1]
+                if (hp == 0) {
+                    hp += 12;
+                    f = "AM";
+                } else if (hp == 12) {
+                    f = "PM";
+                } else if (hp > 12) {
+                    hp -= 12;
+                    f = "PM";
+                } else {
+                    f = "AM";
+                }
+                view.etCtime.setText("$hp:$min $f")
                 progressDialog.dismiss()
             }
 
@@ -53,6 +84,7 @@ class AdminTimeFragment : Fragment() {
                 { timePicker, selectedHour, selectedMinute ->
                     var format=""
                     var hp=selectedHour
+                    oTime="$hp:$selectedMinute"
                     if (hp == 0) {
                         hp += 12;
                         format = "AM";
@@ -82,6 +114,7 @@ class AdminTimeFragment : Fragment() {
                 { timePicker, selectedHour, selectedMinute ->
                     var format=""
                     var hp=selectedHour
+                    cTime="$hp:$selectedMinute"
                     if (hp == 0) {
                         hp += 12;
                         format = "AM";
@@ -106,8 +139,8 @@ class AdminTimeFragment : Fragment() {
         }
         view.btnSubmit.setOnClickListener {
             if (validate()) {
-                itemRef.reference.child("oTime").setValue(view.etOtime.text.toString())
-                itemRef.reference.child("cTime").setValue(view.etCtime.text.toString())
+                itemRef.reference.child("oTime").setValue(oTime)
+                itemRef.reference.child("cTime").setValue(cTime)
 //                Toast.makeText(context, "Time Set", Toast.LENGTH_LONG).show()
             }
         }
