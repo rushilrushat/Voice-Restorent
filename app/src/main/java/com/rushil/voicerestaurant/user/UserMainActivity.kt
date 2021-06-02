@@ -1,6 +1,7 @@
 package com.rushil.voicerestaurant.user
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -31,7 +32,6 @@ class UserMainActivity : AppCompatActivity(){
     var TAG = "UserMainActivity"
     var oTime=""
     var cTime=""
-    var r_Status:Boolean=false
     private var session: Session? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +106,13 @@ class UserMainActivity : AppCompatActivity(){
                 var now= LocalTime.now()
                 var open= LocalTime.of(oTime.split(":")[0].toInt(),oTime.split(":")[1].toInt())
                 var close= LocalTime.of(cTime.split(":")[0].toInt(),cTime.split(":")[1].toInt())
-                r_Status = now.isAfter(open)&&now.isBefore(close)
+                if(now.isAfter(open)&&now.isBefore(close)){
+                    tvTime.setTextColor(Color.GREEN)
+                    session!!.setStatus(true)
+                }else{
+                    session!!.setStatus(false)
+                    tvTime.setTextColor(Color.RED)
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {

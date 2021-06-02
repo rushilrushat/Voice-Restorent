@@ -124,14 +124,15 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 progressDialog.dismiss()
                 itemList.clear()
+
                 for (snapshot in dataSnapshot.children) {
                     val model = snapshot.value as Map<*, *>
                     val price = model["price"].toString().toDouble()
                     val name = model["name"].toString()
                     val id = model["id"].toString()
 
-                    val user = Items(id, name, price)
-                    itemList.add(user)
+                    val item = Items(id, name, price)
+                    itemList.add(item)
                 }
                 Log.d(TAG, itemList.toString())
                 adapter.notifyDataSetChanged()
@@ -248,10 +249,8 @@ class User_Item_Fragment : Fragment(), TextToSpeech.OnInitListener {
                                         question=question_no
                                         speakOut(question)
                                     }
-
-
                                 }else if (recognizedText.equals(question_buy_item,ignoreCase = true)){
-                                    if (UserMainActivity().r_Status){
+                                    if (session!!.getStatus().equals("true")){
                                         question=question_which_item
                                         speakOut(question)
                                     }else{

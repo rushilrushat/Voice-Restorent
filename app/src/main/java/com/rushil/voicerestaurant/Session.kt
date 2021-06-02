@@ -14,6 +14,12 @@ class Session(cntx:Context) {
     fun getuseId(): String? {
         return prefs.getString("usename", "")
     }
+    fun setStatus(rstatus:Boolean){
+        prefs.edit().putString("status", rstatus.toString()).commit()
+    }
+    fun getStatus(): String? {
+        return prefs.getString("status", "")
+    }
 
     init {
         // TODO Auto-generated constructor stub
